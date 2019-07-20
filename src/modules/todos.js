@@ -1,14 +1,23 @@
+import http from './../http'
+
 const reducer = {
   namespaced: true,
   state: {
     items: [],
   },
   actions: {
-    create({ commit }, data) {
-      commit('CREATE', data)
+    fetch({ commit }) {
+      http.get('/todo').then(resp => {
+        commit('FETCH', resp.data)
+      })
+    },
+    create(context, data) {
+      return http.post('/todo', data)
     },
     destroy({ commit }, itemId) {
-      commit('DESTROY', itemId)
+      return http.delete('/todo/' + itemId).then(resp => {
+        commit('DESTROY', resp.data)
+      })
     },
   },
   mutations: {
@@ -17,6 +26,9 @@ const reducer = {
     },
     DESTROY: (state, itemId) => {
       state.items = state.items.filter(i => i.id !== itemId)
+    },
+    FETCH: (state, items) => {
+      state.items = items
     },
   },
   getters: {

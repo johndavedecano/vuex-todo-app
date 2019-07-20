@@ -13,7 +13,7 @@
           v-bind:key="item.id"
           @click="removeItem(item.id)"
         >
-          {{ item.name }}
+          {{ item.task }}
         </li>
       </ul>
     </div>
@@ -27,22 +27,28 @@ export default {
   data: () => ({
     text: '',
   }),
+  mounted() {
+    this.fetch()
+  },
   computed: {
     ...mapGetters('todos', ['items', 'total']),
   },
   methods: {
-    ...mapActions('todos', ['create', 'destroy']),
+    ...mapActions('todos', ['create', 'destroy', 'fetch']),
     handleSubmit() {
       if (this.text !== '') {
         this.create({
-          id: Math.random(),
-          name: this.text,
+          task: this.text,
+        }).then(() => {
+          this.fetch()
         })
         this.text = ''
       }
     },
     removeItem(itemId) {
-      this.destroy(itemId)
+      this.destroy(itemId).then(() => {
+        this.fetch()
+      })
     },
   },
 }
