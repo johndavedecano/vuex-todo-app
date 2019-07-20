@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <div id="todo-app">
+      <h2>Total Items: {{ total }}</h2>
       <form class="todo-app__form" method="POST" @submit.prevent="handleSubmit">
         <input v-model="text" type="text" placeholder="Task name" />
         <button type="submit">Submit</button>
@@ -20,17 +21,20 @@
 </template>
 
 <script>
-// import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'app',
   data: () => ({
     text: '',
-    items: [],
   }),
+  computed: {
+    ...mapGetters('todos', ['items', 'total']),
+  },
   methods: {
+    ...mapActions('todos', ['create', 'destroy']),
     handleSubmit() {
       if (this.text !== '') {
-        this.items.push({
+        this.create({
           id: Math.random(),
           name: this.text,
         })
@@ -38,7 +42,7 @@ export default {
       }
     },
     removeItem(itemId) {
-      this.items = this.items.filter(i => i.id !== itemId)
+      this.destroy(itemId)
     },
   },
 }
